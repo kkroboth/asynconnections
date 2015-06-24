@@ -9,6 +9,22 @@ import logging
 from threading import Lock
 import struct
 
+# These errors will close the connection
+ERROR_DEFAULT = -1
+ERROR_INVALIDPACKET = -2
+ERROR_TYPEINVALID = -3
+ERROR_LENGTHLZERO = -4
+ERROR_LENGTHTOOBIG = -5
+
+# In bytes
+DEFAULT_TYPE_SIZE = 1
+DEFAULT_LENGTH_SIZE = 4
+# In string length
+DEFAULT_MAX_BODY_LENGTH = 65535
+
+DEFAULT_BUFFER_READ_SIZE = 1024
+DEFAULT_BUFFER_SEND_SIZE = 1024
+
 
 class PacketConnection(asyncore.dispatcher):
     """
@@ -41,22 +57,6 @@ class PacketConnection(asyncore.dispatcher):
     infinite recursion of getattr() from dispatcher.__getattr__() will happen. Any attributes
     that do not exist will also result in this recursion in getattr()
     """
-
-    # These errors will close the connection
-    ERROR_DEFAULT = -1
-    ERROR_INVALIDPACKET = -2
-    ERROR_TYPEINVALID = -3
-    ERROR_LENGTHLZERO = -4
-    ERROR_LENGTHTOOBIG = -5
-
-    # In bytes
-    DEFAULT_TYPE_SIZE = 1
-    DEFAULT_LENGTH_SIZE = 4
-    # In string length
-    DEFAULT_MAX_BODY_LENGTH = 65535
-
-    DEFAULT_BUFFER_READ_SIZE = 1024
-    DEFAULT_BUFFER_SEND_SIZE = 1024
 
     def __init__(self, sock=None):
         """
@@ -255,15 +255,15 @@ class PacketConnection(asyncore.dispatcher):
         header = self.read_packet_header(view[offset:])
         if not header:
             self.log.error('Invalid packet from connection %s' % self.addr)
-            return PacketConnection.ERROR_INVALIDPACKET
+            return ERROR_INVALIDPACKET
         p_type, p_length = header
         # Check if type is in valid packet types - if set
         if self.valid_header_types and p_type not in self.valid_header_types:
             self.log.error('Packet type not valid: [%i] in connection %s' % (p_type, self.addr))
-            return PacketConnection.ERROR_TYPEINVALID
+            return ERROR_TYPEINVALID
         if p_length < 0:
             self.log.error('Packet length is less than zero in connection %s' % self.addr)
-            return PacketConnection.ERROR_LENGTHLZERO
+            return ERROR_LENGTHLZERO
         if p_length > self.max_body_length:
             self.log.warn('Packet body length too big [%i] in connection %s' % (p_length, self.addr))
 
