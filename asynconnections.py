@@ -68,12 +68,12 @@ class PacketConnection(asyncore.dispatcher):
         self.dispatcher_sock = sock
 
         # Defaults
-        self.type_size = PacketConnection.DEFAULT_TYPE_SIZE
-        self.length_size = PacketConnection.DEFAULT_LENGTH_SIZE
+        self.type_size = DEFAULT_TYPE_SIZE
+        self.length_size = DEFAULT_LENGTH_SIZE
         self.header_size = self.type_size + self.length_size
-        self.max_body_length = PacketConnection.DEFAULT_MAX_BODY_LENGTH
-        self.buffer_read_size = PacketConnection.DEFAULT_BUFFER_READ_SIZE
-        self.buffer_send_size = PacketConnection.DEFAULT_BUFFER_SEND_SIZE
+        self.max_body_length = DEFAULT_MAX_BODY_LENGTH
+        self.buffer_read_size = DEFAULT_BUFFER_READ_SIZE
+        self.buffer_send_size = DEFAULT_BUFFER_SEND_SIZE
         self.valid_header_types = None
         self.write_sendall = True
         self.safely_handle_errors = True
